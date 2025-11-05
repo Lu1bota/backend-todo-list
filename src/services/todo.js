@@ -1,9 +1,14 @@
 import { TodoCollection } from '../db/models/todo.js';
 
-export async function getTodos(userId) {
-  const todos = await TodoCollection.find({
+export async function getTodos(userId, filter = {}) {
+  const query = {
     $or: [{ userId: userId }, { userId: { $exists: false } }],
-  }).sort({ _id: -1 });
+  };
+
+  const { status } = filter;
+  if (status) query.status = status;
+
+  const todos = await TodoCollection.find(query).sort({ _id: -1 });
 
   return todos;
 }
@@ -47,7 +52,7 @@ export async function updateTodo(todoId, userId, payload) {
 export async function deleteTodo(todoId, userId) {
   const todo = await TodoCollection.findByIdAndDelete({
     _id: todoId,
-    userId: userId, // 👈 Фільтр
+    userId: userId,
   });
 
   return todo;

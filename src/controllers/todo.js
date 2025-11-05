@@ -9,7 +9,9 @@ import {
 
 export async function getTodosController(req, res, next) {
   const { id } = req.user;
-  const todos = await getTodos(id);
+  const filters = req.query;
+
+  const todos = await getTodos(id, filters);
 
   res.status(200).json({
     status: 200,
