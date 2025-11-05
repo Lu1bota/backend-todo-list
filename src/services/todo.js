@@ -1,15 +1,29 @@
 import { TodoCollection } from '../db/models/todo.js';
 
-export async function getTodos() {
-  const todos = await TodoCollection.find().sort({ _id: -1 });
+export async function getTodos(userId) {
+  const todos = await TodoCollection.find({
+    $or: [{ userId: userId }, { userId: { $exists: false } }],
+  }).sort({ _id: -1 });
 
   return todos;
 }
 
-export async function getTodoById(todoId) {
+export async function getTodoById(todoId, userId) {
   const todo = await TodoCollection.findById(todoId);
 
-  return todo;
+  if (!todo) {
+    return null;
+  }
+
+  if (!todo.userId) {
+    return todo;
+  }
+
+  if (todo.userId.toString() === userId.toString()) {
+    return todo;
+  }
+
+  return null;
 }
 
 export async function createTodo(payload) {
@@ -18,16 +32,23 @@ export async function createTodo(payload) {
   return todo;
 }
 
-export async function updateTodo(todoId, payload) {
-  const todo = await TodoCollection.findByIdAndUpdate(todoId, payload, {
-    new: true,
-  });
+export async function updateTodo(todoId, userId, payload) {
+  const todo = await TodoCollection.findByIdAndUpdate(
+    { _id: todoId, userId: userId },
+    payload,
+    {
+      new: true,
+    },
+  );
 
   return todo;
 }
 
-export async function deleteTodo(todoId) {
-  const todo = await TodoCollection.findByIdAndDelete(todoId);
+export async function deleteTodo(todoId, userId) {
+  const todo = await TodoCollection.findByIdAndDelete({
+    _id: todoId,
+    userId: userId, // 👈 Фільтр
+  });
 
   return todo;
 }

@@ -5,6 +5,7 @@ import cors from 'cors';
 import pino from 'pino-http';
 import { errorHandler } from './middlewares/errorHandler.js';
 import router from './routers/index.js';
+import cookieParser from 'cookie-parser';
 
 dotenv.config();
 
@@ -14,6 +15,7 @@ export function setupServer() {
   const app = express();
 
   app.use(express.json());
+  app.use(cookieParser());
   app.use(
     cors({
       origin: [

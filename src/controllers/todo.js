@@ -8,7 +8,8 @@ import {
 } from '../services/todo.js';
 
 export async function getTodosController(req, res, next) {
-  const todos = await getTodos();
+  const { id } = req.user;
+  const todos = await getTodos(id);
 
   res.status(200).json({
     status: 200,
@@ -18,8 +19,9 @@ export async function getTodosController(req, res, next) {
 }
 
 export async function getTodoByIdController(req, res, next) {
+  const { id } = req.user;
   const { todoId } = req.params;
-  const todo = await getTodoById(todoId);
+  const todo = await getTodoById(todoId, id);
 
   res.status(200).json({
     status: 200,
@@ -29,7 +31,11 @@ export async function getTodoByIdController(req, res, next) {
 }
 
 export async function createTodoController(req, res) {
-  const todo = await createTodo(req.body);
+  const { id } = req.user;
+
+  const payload = { ...req.body, userId: id };
+
+  const todo = await createTodo(payload);
 
   res.status(201).json({
     status: 201,
@@ -40,8 +46,9 @@ export async function createTodoController(req, res) {
 
 export async function updateTodoController(req, res) {
   const { todoId } = req.params;
+  const { id } = req.user;
 
-  const todo = await updateTodo(todoId, req.body);
+  const todo = await updateTodo(todoId, id, req.body);
 
   if (!todo) throw createHttpError(404, 'Contact not found');
 
@@ -54,8 +61,9 @@ export async function updateTodoController(req, res) {
 
 export async function deleteTodoController(req, res) {
   const { todoId } = req.params;
+  const { id } = req.user;
 
-  const todo = await deleteTodo(todoId);
+  const todo = await deleteTodo(todoId, id);
 
   if (!todo) throw createHttpError(404, 'Todo not found');
 

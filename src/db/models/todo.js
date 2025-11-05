@@ -16,10 +16,10 @@ const todoSchema = new Schema(
       enum: ['todo', 'in progress', 'done'],
       default: 'todo',
     },
-    // userId: {
-    //   type: Schema.Types.ObjectId,
-    //   required: true,
-    // },
+    userId: {
+      type: Schema.Types.ObjectId,
+      required: true,
+    },
   },
   {
     timestamps: true,
