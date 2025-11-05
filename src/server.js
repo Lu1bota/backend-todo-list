@@ -21,6 +21,7 @@ export function setupServer() {
       origin: [
         'https://backend-todo-list-4kll.onrender.com',
         'https://todo-app-eta-nine.vercel.app/',
+        'http://localhost:3000'
       ],
       credentials: true,
     }),
