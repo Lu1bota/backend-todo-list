@@ -1,6 +1,8 @@
 import { loginUser, registerUser } from '../services/auth.js';
 import { getEnvVar } from '../utils/getEnvVar.js';
 
+const isSecure = getEnvVar('IS_SECURE') === 'production';
+
 export async function registerUserController(req, res) {
   const user = await registerUser(req.body);
 
@@ -16,7 +18,8 @@ export async function loginUserController(req, res) {
 
   res.cookie('token', token, {
     httpOnly: true,
-    secure: getEnvVar('IS_SECURE') === 'production',
+    secure: isSecure,
+    sameSite: isSecure ? 'none' : 'lax',
     path: '/',
     maxAge: 24 * 60 * 60 * 1000,
   });
@@ -30,7 +33,8 @@ export async function loginUserController(req, res) {
 export async function logoutUserController(req, res) {
   res.clearCookie('token', {
     httpOnly: true,
-    secure: getEnvVar('IS_SECURE') === 'production',
+    secure: isSecure,
+    sameSite: isSecure ? 'none' : 'lax',
     path: '/',
   });
 
